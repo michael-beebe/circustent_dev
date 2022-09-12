@@ -1,5 +1,5 @@
 /*
- * _CT_OMP_IMPL_C_
+ * _CT_CUDA_IMPL_C_
  *
  * Copyright (C) 2017-2021 Tactical Computing Laboratories, LLC
  * All Rights Reserved
