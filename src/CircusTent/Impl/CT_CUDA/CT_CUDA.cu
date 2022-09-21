@@ -209,26 +209,24 @@ bool CT_CUDA::Execute(double &Timing, double &GAMS) {
 
     CTBaseImpl::CTBenchType BType   = this->GetBenchType(); // benchmark type
     CTBaseImpl::CTAtomType  AType   = this->GetAtomType();  // atomic type
-    double StartTime = 0.; // start time
-    double EndTime   = 0.; // end time
+    cudaEvent_t start, stop;
+    cudaEventCreate(start);
+    cudaEventCreate(stop);
     double OPS       = 0.; // billions of operations
 
     // determine benchmark type and launch the desired kernel
     if ( BType == CT_RAND ) {
         switch ( AType ) {
             case CT_ADD:
-                cudaDeviceSynchronize();
-                StartTime = this->MySecond();
+                cudaEventRecord(start);
                 RAND_ADD<<< blocksPerGrid, threadsPerBlock >>>( d_Array, d_Idx, iters, pes );
-                cudaDeviceSynchronize();
-                EndTime   = this->MySecond();
+                cudaEventRecord(stop);
                 OPS = this->GAM(1, iters, pes);
                 break;
             case CT_CAS:
-                StartTime = this->MySecond();
+                cudaEventRecord(start);
                 RAND_CAS<<< blocksPerGrid, threadsPerBlock >>>( d_Array, d_Idx, iters, pes );
-                cudaDeviceSynchronize();
-                EndTime   = this->MySecond();
+                cudaEventRecord(stop);
                 OPS = this->GAM(1, iters, pes);
                 break;
             default:
@@ -240,19 +238,15 @@ bool CT_CUDA::Execute(double &Timing, double &GAMS) {
     else if ( BType == CT_STRIDE1 ) {
         switch( AType ) {
             case CT_ADD:
-                cudaDeviceSynchronize();
-                StartTime = this->MySecond();
+                cudaEventRecord(start);
                 STRIDE1_ADD<<< blocksPerGrid, threadsPerBlock >>>( d_Array, iters, pes );
-                cudaDeviceSynchronize();
-                EndTime   = this->MySecond();
+                cudaEventRecord(stop);
                 OPS = this->GAM(1, iters, pes);
                 break;
             case CT_CAS:
-                cudaDeviceSynchronize();
-                StartTime = this->MySecond();
+                cudaEventRecord(start);
                 STRIDE1_CAS<<< blocksPerGrid, threadsPerBlock >>>( d_Array, iters, pes );
-                cudaDeviceSynchronize();
-                EndTime   = this->MySecond();
+                cudaEventRecord(stop);
                 OPS = this->GAM(1, iters, pes);
                 break;
             default:
@@ -264,19 +258,15 @@ bool CT_CUDA::Execute(double &Timing, double &GAMS) {
     else if ( BType == CT_STRIDEN ) {
         switch( AType ) {
             case CT_ADD:
-                cudaDeviceSynchronize();
-                StartTime = this->MySecond();
+                cudaEventRecord(start);
                 STRIDEN_ADD<<< blocksPerGrid, threadsPerBlock >>>( d_Array, d_Idx, iters, pes, stride );
-                cudaDeviceSynchronize();
-                EndTime   = this->MySecond();
+                cudaEventRecord(stop);
                 OPS = this->GAM(1, iters, pes);
                 break;
             case CT_CAS:
-                cudaDeviceSynchronize();
-                StartTime = this->MySecond();
+                cudaEventRecord(start);
                 STRIDEN_CAS<<< blocksPerGrid, threadsPerBlock >>>( d_Array, d_Idx, iters, pes, stride );
-                cudaDeviceSynchronize();
-                EndTime   = this->MySecond();
+                cudaEventRecord(stop);
                 OPS = this->GAM(1, iters, pes);
                 break;
             default:
@@ -288,19 +278,15 @@ bool CT_CUDA::Execute(double &Timing, double &GAMS) {
     else if ( BType == CT_PTRCHASE ) {
         switch( AType ) {
             case CT_ADD:
-                cudaDeviceSynchronize();
-                StartTime = this->MySecond();
+                cudaEventRecord(start);
                 PTRCHASE_ADD<<< blocksPerGrid, threadsPerBlock >>>( d_Array, d_Idx, iters, pes );
-                cudaDeviceSynchronize();
-                EndTime   = this->MySecond();
+                cudaEventRecord(stop);
                 OPS = this->GAM(1, iters, pes);
                 break;
             case CT_CAS:
-                cudaDeviceSynchronize();
-                StartTime = this->MySecond();
+                cudaEventRecord(start);
                 PTRCHASE_CAS<<< blocksPerGrid, threadsPerBlock >>>( d_Array, d_Idx, iters, pes );
-                cudaDeviceSynchronize();
-                EndTime   = this->MySecond();
+                cudaEventRecord(stop);
                 OPS = this->GAM(1, iters, pes);
                 break;
             default:
@@ -312,19 +298,15 @@ bool CT_CUDA::Execute(double &Timing, double &GAMS) {
     else if ( BType == CT_SG ) {
         switch( AType ) {
             case CT_ADD:
-                cudaDeviceSynchronize();
-                StartTime = this->MySecond();
+                cudaEventRecord(start);
                 SG_ADD<<< blocksPerGrid, threadsPerBlock >>>( d_Array, d_Idx, iters, pes );
-                cudaDeviceSynchronize();
-                EndTime   = this->MySecond();
+                cudaEventRecord(stop);
                 OPS = this->GAM(4, iters, pes);
                 break;
             case CT_CAS:
-                cudaDeviceSynchronize();
-                StartTime = this->MySecond();
+                cudaEventRecord(start);
                 SG_CAS<<< blocksPerGrid, threadsPerBlock >>>( d_Array, d_Idx, iters, pes );
-                cudaDeviceSynchronize();
-                EndTime   = this->MySecond();
+                cudaEventRecord(stop);
                 OPS = this->GAM(4, iters, pes);
                 break;
             default:
@@ -336,19 +318,15 @@ bool CT_CUDA::Execute(double &Timing, double &GAMS) {
     else if ( BType == CT_CENTRAL ) {
         switch( AType ) {
             case CT_ADD:
-                cudaDeviceSynchronize();
-                StartTime = this->MySecond();
+                cudaEventRecord(start);
                 CENTRAL_ADD<<< blocksPerGrid, threadsPerBlock >>>( d_Array, d_Idx, iters, pes );
-                cudaDeviceSynchronize();
-                EndTime   = this->MySecond();
+                cudaEventRecord(stop);
                 OPS = this->GAM(1, iters, pes);
                 break;
             case CT_CAS:
-                cudaDeviceSynchronize();
-                StartTime = this->MySecond();
+                cudaEventRecord(start);
                 CENTRAL_CAS<<< blocksPerGrid, threadsPerBlock >>>( d_Array, d_Idx, iters, pes );
-                cudaDeviceSynchronize();
-                EndTime   = this->MySecond();
+                cudaEventRecord(stop);
                 OPS = this->GAM(1, iters, pes);
                 break;
             default:
@@ -360,19 +338,15 @@ bool CT_CUDA::Execute(double &Timing, double &GAMS) {
     else if ( BType == CT_SCATTER ) {
         switch( AType ) {
             case CT_ADD:
-                cudaDeviceSynchronize();
-                StartTime = this->MySecond();
+                cudaEventRecord(start);
                 SCATTER_ADD<<< blocksPerGrid, threadsPerBlock >>>( d_Array, d_Idx, iters, pes );
-                cudaDeviceSynchronize();
-                EndTime   = this->MySecond();
+                cudaEventRecord(stop);
                 OPS = this->GAM(3, iters, pes);
                 break;
             case CT_CAS:
-                cudaDeviceSynchronize();
-                StartTime = this->MySecond();
+                cudaEventRecord(start);
                 SCATTER_CAS<<< blocksPerGrid, threadsPerBlock >>>( d_Array, d_Idx, iters, pes );
-                cudaDeviceSynchronize();
-                EndTime   = this->MySecond();
+                cudaEventRecord(stop);
                 OPS = this->GAM(3, iters, pes);
                 break;
             default:
@@ -384,19 +358,15 @@ bool CT_CUDA::Execute(double &Timing, double &GAMS) {
     else if ( BType == CT_GATHER ) {
         switch( AType ) {
             case CT_ADD:
-                cudaDeviceSynchronize();
-                StartTime = this->MySecond();
+                cudaEventRecord(start);
                 GATHER_ADD<<< blocksPerGrid, threadsPerBlock >>>( d_Array, d_Idx, iters, pes );
-                cudaDeviceSynchronize();
-                EndTime   = this->MySecond();
+                cudaEventRecord(stop);
                 OPS = this->GAM(3, iters, pes);
                 break;
             case CT_CAS:
-                cudaDeviceSynchronize();
-                StartTime = this->MySecond();
+                cudaEventRecord(start);
                 GATHER_CAS<<< blocksPerGrid, threadsPerBlock >>>( d_Array, d_Idx, iters, pes );
-                cudaDeviceSynchronize();
-                EndTime   = this->MySecond();
+                cudaEventRecord(stop);
                 OPS = this->GAM(3, iters, pes);
                 break;
             default:
@@ -410,7 +380,11 @@ bool CT_CUDA::Execute(double &Timing, double &GAMS) {
         return false;
     }
     
-    Timing = this->Runtime(StartTime,EndTime);
+    cudaEventSynchronize(stop);
+    float ms = 0;
+    cudaEventElapsedTime(&ms, start, stop);
+    
+    Timing = ms * 1E-3;
     GAMS   = OPS/Timing;
 
     return true;
